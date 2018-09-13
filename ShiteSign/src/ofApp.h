@@ -1,6 +1,10 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
+#include "ofxOsc.h"
+#include "ofxOpenCv.h"
+#include "ofxXmlSettings.h"
 
 class ofApp : public ofBaseApp{
 
@@ -20,5 +24,26 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
+		// Custom Listeners
+		bool fileLoading = false;
+		void LoadFile();
+		void CheckFileLoad();
+
+		// GUI definitions
+		bool showGui = false;
+		ofxPanel gui;
+		ofParameter<string> filename;
+		ofxButton loadFile;
+
+		// OSC definitions
+		int oscPort = 8000;
+		ofxOscReceiver oscReceiver;
+
+		// Video definitions
+		ofVideoPlayer vidPlayer;
+		cv::Mat frame;
+		ofVideoGrabber grabber;
+		bool configMode = false;
 		
 };

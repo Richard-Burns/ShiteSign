@@ -1,45 +1,100 @@
 #include "ofApp.h"
-#include "ofxOpenCv.h"
-#include "ofxXmlSettings.h"
-
-ofVideoPlayer vidPlayer;
-cv::Mat frame;
-ofVideoGrabber grabber;
-bool configMode = false;
 
 //--------------------------------------------------------------
-void ofApp::setup(){
 
+void ofApp::setup(){
+	ofSetVerticalSync(true);
+
+	// Setup and load settings
 	ofxXmlSettings settings;
 	settings.loadFile("settings.xml");
-	string vid = settings.getValue("settings:filename", "null");
+	string vid = settings.getValue("panel:filename", "null");
+
+
+	// setup GUI
+
+	gui.setup("panel"); // most of the time you don't need a name but don't forget to call setup
+	gui.add(filename.set("filename", vid));
+	gui.add(loadFile.setup("Load File"));
 	ofHideCursor();
-	
-	vidPlayer.load(vid);
-	vidPlayer.play();
-	vidPlayer.setLoopState(OF_LOOP_NORMAL);
+	// Add GUI listeners
+	loadFile.addListener(this, &ofApp::LoadFile);
+
+	// setup OSC
+
+	oscReceiver.setup(oscPort);
 
 	ofSetWindowShape(ofGetWidth(), ofGetHeight());
 	ofSetBackgroundAuto(false);
-}
-//--------------------------------------------------------------
-void ofApp::update(){
-	vidPlayer.update();
+	ofSetBackgroundColor(ofColor(0, 0, 0, 255));
+	LoadFile();
 }
 
 //--------------------------------------------------------------
+
+void ofApp::update(){
+	vidPlayer.update();
+	CheckFileLoad();
+
+	while (oscReceiver.hasWaitingMessages()) {
+
+		// get the next message
+		ofxOscMessage m;
+		oscReceiver.getNextMessage(m);
+
+		// check for mouse moved message
+		if (m.getAddress() == "/playvideo") {
+			// both the arguments are floats
+			filename = m.getArgAsString(0);
+			LoadFile();
+		}
+	}
+}
+
+//--------------------------------------------------------------
+
 void ofApp::draw(){
 	int width = ofGetWidth();
 	int height = ofGetHeight();
+	if (vidPlayer.isLoaded()) {
+		vidPlayer.draw(0, 0, width, height);
+	}
 
-
-
-	vidPlayer.draw(0, 0, width, height);
+	if (showGui) {
+		gui.draw();
+		ofShowCursor();
+	}
+	else {
+		ofHideCursor();
+	}
 }
+
+// CUSTOM LISTENERS
+
+
+void ofApp::LoadFile() {
+	vidPlayer.close();
+	vidPlayer.load(filename.get());
+}
+
+void ofApp::CheckFileLoad() {
+	if (vidPlayer.isLoaded()) {
+		vidPlayer.play();
+		vidPlayer.setLoopState(OF_LOOP_NORMAL);
+		fileLoading = false;
+	}
+}
+
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+	if (key == 'm') {
+		showGui = !showGui;
+	}
 
+	if (key == 's') {
+		gui.saveToFile("settings.xml");
+	}
 }
 
 //--------------------------------------------------------------

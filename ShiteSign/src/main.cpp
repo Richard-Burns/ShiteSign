@@ -3,9 +3,21 @@
 
 //========================================================================
 int main( ){
+
+	bool testMode = false;
+
+
 	int width = 1920;
 	int height = 1080;
-	ofSetupOpenGL(width,height, OF_FULLSCREEN);
+	enum ofWindowMode screenType = OF_FULLSCREEN;
+
+	if (testMode) {
+		width = 1280;
+		height = 720;
+		screenType = OF_WINDOW;
+	}
+
+	ofSetupOpenGL(width, height, screenType);
 
 	ofRunApp(new ofApp());
 
