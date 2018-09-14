@@ -2,7 +2,7 @@
 #define MAIN_ICON                       102
 
 #if defined(_DEBUG)
-MAIN_ICON               ICON                    "favicon.ico"
+MAIN_ICON               ICON                    "icon_debug.ico"
 #else
-MAIN_ICON               ICON                    "favicon.ico"
+MAIN_ICON               ICON                    "icon.ico"
 #endif

@@ -4,6 +4,7 @@
 #include "ofxGui.h"
 #include "ofxOsc.h"
 #include "ofxOpenCv.h"
+#include "ofxCv.h"
 #include "ofxXmlSettings.h"
 
 class ofApp : public ofBaseApp{
@@ -24,6 +25,7 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+		void exit();
 
 		// Custom Listeners
 		bool fileLoading = false;
@@ -36,14 +38,24 @@ class ofApp : public ofBaseApp{
 		ofParameter<string> filename;
 		ofxButton loadFile;
 
+		// GUI Perspective Pin definitions
+		ofParameter<float> topLeftX;
+		ofParameter<float> topLeftY;
+		ofParameter<float> topRightX;
+		ofParameter<float> topRightY;
+		ofParameter<float> bottomLeftX;
+		ofParameter<float> bottomLeftY;
+		ofParameter<float> bottomRightX;
+		ofParameter<float> bottomRightY;
+
 		// OSC definitions
 		int oscPort = 8000;
 		ofxOscReceiver oscReceiver;
 
 		// Video definitions
 		ofVideoPlayer vidPlayer;
-		cv::Mat frame;
-		ofVideoGrabber grabber;
+		ofImage img;
+		ofVideoGrabber cam;
 		bool configMode = false;
 		
 };

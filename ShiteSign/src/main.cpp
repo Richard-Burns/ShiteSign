@@ -4,7 +4,7 @@
 //========================================================================
 int main( ){
 
-	bool testMode = false;
+	bool testMode = true;
 
 
 	int width = 1920;
