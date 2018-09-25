@@ -8,7 +8,30 @@ void ofApp::setup(){
 	// Setup and load settings
 	ofxXmlSettings settings;
 	settings.loadFile("settings.xml");
+
+	width = settings.getValue("settings:width", 1920);
+	height = settings.getValue("settings:height", 1080);
+	oscPort = settings.getValue("settings:oscPort", 8000);
+
+
+	topLeftX.set("Top Left X", 0, -0.5, 0.5);
+	topLeftY.set("Top Left Y", 0, 0.5, -0.5);
+	bottomLeftX.set("Bottom Left X", 0, -0.5, 0.5);
+	bottomLeftY.set("Bottom Left Y", 1.0, 1.5, 0.5);
+	topRightX.set("Top Right X", 1.0, 0.5, 1.5);
+	topRightY.set("Top Right Y", 0, 0.5, -0.5);
+	bottomRightX.set("Bottom Right X", 1.0, 0.5, 1.5);
+	bottomRightY.set("Bottom Right Y", 1.0, 1.5, 0.5);
+
 	string vid = settings.getValue("panel:filename", "null");
+	topLeftX = settings.getValue("panel:Top_Left_X", 0);
+	topLeftY = settings.getValue("panel:Top_Left_Y", 0);
+	topRightX = settings.getValue("panel:Top_Right_X", 1.0f);
+	topRightY = settings.getValue("panel:Top_Right_Y", 0);
+	bottomLeftX = settings.getValue("panel:Bottom_Left_X", 0);
+	bottomLeftY = settings.getValue("panel:Bottom_Left_Y", 1.0f);
+	bottomRightX = settings.getValue("panel:Bottom_Right_X", 1.0f);
+	bottomRightY = settings.getValue("panel:Bottom_Right_Y", 1.0f);
 
 
 	// setup GUI
@@ -17,70 +40,32 @@ void ofApp::setup(){
 	gui.add(filename.set("filename", vid));
 	gui.add(loadFile.setup("Load File"));
 
-	// setup Perspective Pin GUI
-	gui.add(topLeftX.set(0.5f));
-	topLeftX.setName("Top Left X");
-	gui.add(topLeftY.set(0.5f));
-	topLeftY.setName("Top Left Y");
+	gui.add(topLeftX);
+	gui.add(topLeftY);
+	gui.add(bottomLeftX);
+	gui.add(bottomLeftY);
+	gui.add(topRightX);
+	gui.add(topRightY);
+	gui.add(bottomRightX);
+	gui.add(bottomRightY);
 
-	gui.add(topRightX.set(0.5f));
-	topRightX.setName("Top Right X");
-	gui.add(topRightY.set(0.5f));
-	topRightY.setName("Top Right Y");
-
-	gui.add(bottomLeftX.set(0.5f));
-	bottomLeftX.setName("bottom Left X");
-	gui.add(bottomLeftY.set(0.5f));
-	bottomLeftY.setName("bottom Left Y");
-
-	gui.add(bottomRightX.set(0.5f));
-	bottomRightX.setName("bottom Right X");
-	gui.add(bottomRightY.set(0.5f));
-	bottomRightY.setName("bottom Right Y");
 
 	ofHideCursor();
 	// Add GUI listeners
 	loadFile.addListener(this, &ofApp::LoadFile);
 
 	// setup OSC
-
+	LoadFile();
 	oscReceiver.setup(oscPort);
 
 	ofSetWindowShape(ofGetWidth(), ofGetHeight());
 	ofSetBackgroundAuto(false);
 	ofSetBackgroundColor(ofColor(0, 0, 0, 255));
-	LoadFile();
 }
 
 //--------------------------------------------------------------
 
 void ofApp::update(){
-
-
-	if (!fileLoading && vidPlayer.isInitialized() && vidPlayer.isLoaded()) {
-		vidPlayer.update();
-
-		if (vidPlayer.isFrameNew() && !fileLoading) {
-
-			cv::Mat vidMat = ofxCv::toCv(vidPlayer);
-			cv::Mat frame;
-
-			std::vector<cv::Point2f> destPoints(4);
-
-			destPoints[0] = cv::Point2f(400.0f, 0.0f);
-			destPoints[1] = cv::Point2f(1920.0f, 0.0f);
-			destPoints[2] = cv::Point2f(1920.0f, 1080.0f);
-			destPoints[3] = cv::Point2f(0.0f, 1080.0f);
-
-			ofxCv::warpPerspective(vidPlayer, img, destPoints);
-			ofxCv::toOf(vidMat, img);
-
-		}
-	}
-	else {
-		CheckFileLoad();
-	}
-
 
 	while (oscReceiver.hasWaitingMessages()) {
 
@@ -95,7 +80,34 @@ void ofApp::update(){
 			LoadFile();
 		}
 	}
+
+	if (vidPlayer.isLoaded()) {
+		vidPlayer.update();
+
+		if (vidPlayer.isFrameNew()) {
+
+			vidMat = ofxCv::toCv(vidPlayer);
+			int vidWidth = vidMat.cols;
+			int vidHeight = vidMat.rows;
+
+			std::vector<cv::Point2f> destPoints(4);
+
+			destPoints[0] = cv::Point2f(topLeftX*vidWidth, topLeftY*vidHeight);
+			destPoints[1] = cv::Point2f(topRightX*vidWidth, topRightY*vidHeight);
+			destPoints[2] = cv::Point2f(bottomRightX*vidWidth, bottomRightY*vidHeight);
+			destPoints[3] = cv::Point2f(bottomLeftX*vidWidth, bottomLeftY*vidHeight);
+
+			ofxCv::warpPerspective(vidPlayer, vidMat, destPoints);
+
+
+			ofxCv::toOf(vidMat, img);
+
+		}
+
+	}
+
 }
+
 
 //--------------------------------------------------------------
 
@@ -103,9 +115,10 @@ void ofApp::draw(){
 	int width = ofGetWidth();
 	int height = ofGetHeight();
 
-	if (img.isAllocated() && vidPlayer.isLoaded()) {
+	if (img.isAllocated()) {
+		img.resize(width, height);
 		img.update();
-		img.draw(0, 0, width, height);
+		img.draw(0, 0);
 	}
 
 	if (showGui) {
@@ -122,17 +135,10 @@ void ofApp::draw(){
 
 
 void ofApp::LoadFile() {
-	fileLoading = true;
-	vidPlayer.close();
-	vidPlayer.load(filename.get());
-}
-
-void ofApp::CheckFileLoad() {
-	if (vidPlayer.isLoaded()) {
-		vidPlayer.play();
-		vidPlayer.setLoopState(OF_LOOP_NORMAL);
-		fileLoading = false;
-	}
+	img.clear();
+	vidPlayer.loadAsync(filename);
+	vidPlayer.play();
+	vidPlayer.setLoopState(OF_LOOP_NORMAL);
 }
 
 

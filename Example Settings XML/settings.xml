@@ -1,3 +1,17 @@
+<?xml version="1.0"?>
 <settings>
-    <filename>F:/4kbadger.mov</filename>
+	<width>1920</width>
+	<height>1080</height>
+	<oscPort>8000</oscPort>
 </settings>
+<panel>
+	<filename>F:/butterkist.mp4</filename>
+	<Top_Left_X>0.125</Top_Left_X>
+	<Top_Left_Y>0.145</Top_Left_Y>
+	<Top_Right_X>0.765</Top_Right_X>
+	<Top_Right_Y>0.225</Top_Right_Y>
+	<Bottom_Left_X>0.15</Bottom_Left_X>
+	<Bottom_Left_Y>0.825</Bottom_Left_Y>
+	<Bottom_Right_X>0.84</Bottom_Right_X>
+	<Bottom_Right_Y>0.935</Bottom_Right_Y>
+</panel>
