@@ -62,5 +62,6 @@ class ofApp : public ofBaseApp{
 		cv::Mat vidMat;
 		ofVideoGrabber cam;
 		bool configMode = false;
+		int curCorner = 0;
 		
 };

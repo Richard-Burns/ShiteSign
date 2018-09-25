@@ -148,9 +148,64 @@ void ofApp::keyPressed(int key){
 		showGui = !showGui;
 	}
 
+	if (key == '1') {
+		curCorner = 0;
+	}
+	if (key == '2') {
+		curCorner = 1;
+	}
+	if (key == '3') {
+		curCorner = 2;
+	}
+	if (key == '4') {
+		curCorner = 3;
+	}
+
 	if (key == 's') {
 		gui.saveToFile("settings.xml");
 	}
+
+	double sens = 0.0005;
+
+	if (key == OF_KEY_UP) {
+		sens = -0.0005;
+	}
+	
+	if (key == OF_KEY_LEFT) {
+		sens = -0.0005;
+	}
+
+	if (key == OF_KEY_UP || key == OF_KEY_DOWN) {
+		if (curCorner == 0) {
+			topLeftY = topLeftY + sens;
+		}
+		else if (curCorner == 1) {
+			topRightY = topRightY + sens;
+		}
+		else if (curCorner == 2) {
+			bottomRightY = bottomRightY + sens;
+		}
+		else {
+			bottomLeftY = bottomLeftY + sens;
+		}
+	}
+
+	if (key == OF_KEY_RIGHT || key == OF_KEY_LEFT) {
+		if (curCorner == 0) {
+			topLeftX = topLeftX + sens;
+		}
+		else if (curCorner == 1) {
+			topRightX = topRightX + sens;
+		}
+		else if (curCorner == 2) {
+			bottomRightX = bottomRightX + sens;
+		}
+		else {
+			bottomLeftX = bottomLeftX + sens;
+		}
+	}
+
+
 }
 
 //--------------------------------------------------------------
