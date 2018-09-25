@@ -24,11 +24,11 @@ void ofApp::setup(){
 	bottomRightY.set("Bottom Right Y", 1.0, 1.5, 0.5);
 
 	string vid = settings.getValue("panel:filename", "null");
-	topLeftX = settings.getValue("panel:Top_Left_X", 0);
-	topLeftY = settings.getValue("panel:Top_Left_Y", 0);
+	topLeftX = settings.getValue("panel:Top_Left_X", 0.0f);
+	topLeftY = settings.getValue("panel:Top_Left_Y", 0.0f);
 	topRightX = settings.getValue("panel:Top_Right_X", 1.0f);
-	topRightY = settings.getValue("panel:Top_Right_Y", 0);
-	bottomLeftX = settings.getValue("panel:Bottom_Left_X", 0);
+	topRightY = settings.getValue("panel:Top_Right_Y", 0.0f);
+	bottomLeftX = settings.getValue("panel:Bottom_Left_X", 0.0f);
 	bottomLeftY = settings.getValue("panel:Bottom_Left_Y", 1.0f);
 	bottomRightX = settings.getValue("panel:Bottom_Right_X", 1.0f);
 	bottomRightY = settings.getValue("panel:Bottom_Right_Y", 1.0f);
